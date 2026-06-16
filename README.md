@@ -1,4 +1,4 @@
-# ☕ Roast Log — Trazabilidad de Café de Especialidad
+# ☕ cafecito nas - proyecto — Trazabilidad de Café de Especialidad
 
 Mantenimiento (CRUD) full‑stack que modela la trazabilidad real del café **"de la finca a la taza"**:
 
@@ -20,7 +20,7 @@ estados y **anulación con devolución de stock**. Incluye **autenticación JWT 
 
 | Capa | Tecnología |
 |---|---|
-| **Frontend** | Angular 20 (standalone + signals) · TypeScript · **Tailwind CSS** (sistema de diseño propio "Roast Log") |
+| **Frontend** | Angular 20 (standalone + signals) · TypeScript · **Tailwind CSS** (sistema de diseño propio) |
 | **Backend** | Java 21 · Spring Boot 3.3 · arquitectura por capas (Controller → Service → Repository) |
 | **Seguridad** | Spring Security + **JWT** (HS256, BCrypt) · roles `ADMIN` / `USER` |
 | **Persistencia** | Spring Data JPA · **Flyway** (migraciones versionadas) |
@@ -143,7 +143,7 @@ Para regenerar el bundle que sirve el backend: `npm run build` y copiar `dist/fr
 │       │   ├── dashboard/        # endpoint de resumen
 │       │   └── web/              # reenvío de rutas del SPA a index.html
 │       └── resources/static/     # frontend Angular compilado (servido por el backend)
-├── frontend/                     # SPA Angular 20 + Tailwind (sistema "Roast Log")
+├── frontend/                     # SPA Angular 20 + Tailwind (sistema de diseño propio)
 │   └── src/app/                  # core, shared, layout, features
 ├── docs/
 │   ├── superpowers/specs/        # documento de diseño

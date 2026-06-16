@@ -13,7 +13,7 @@ import { CoffeeMark } from '../shared/coffee-mark';
         <div class="px-5 pb-4 pt-6">
           <div class="flex items-center gap-2.5">
             <rl-coffee-mark [size]="30" class="text-ink-soft" />
-            <span class="font-display text-[15px] font-bold leading-none tracking-tight text-ink">ROAST&nbsp;LOG</span>
+            <span class="font-display text-[13px] font-bold leading-tight tracking-tight text-ink">cafecito nas - proyecto</span>
           </div>
           <div class="eyebrow mt-2.5">Trazabilidad de café</div>
         </div>

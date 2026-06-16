@@ -15,7 +15,7 @@ import { CoffeeMark } from '../../shared/coffee-mark';
         <div class="absolute inset-y-0 left-0 w-1.5 roast-spectrum"></div>
         <div class="flex items-center gap-3">
           <rl-coffee-mark [size]="34" class="text-paper/70" />
-          <span class="font-display text-lg font-bold tracking-tight">ROAST&nbsp;LOG</span>
+          <span class="font-display text-lg font-bold tracking-tight">cafecito nas - proyecto</span>
         </div>
         <div class="max-w-md">
           <div class="eyebrow !text-paper/50">Café de especialidad</div>
@@ -41,7 +41,7 @@ import { CoffeeMark } from '../../shared/coffee-mark';
         <div class="w-full max-w-sm">
           <div class="lg:hidden mb-8 flex items-center gap-2.5">
             <rl-coffee-mark [size]="28" class="text-ink-soft" />
-            <span class="font-display text-base font-bold tracking-tight text-ink">ROAST&nbsp;LOG</span>
+            <span class="font-display text-base font-bold tracking-tight text-ink">cafecito nas - proyecto</span>
           </div>
           <div class="eyebrow">Acceso</div>
           <h2 class="mt-2 font-display text-2xl font-semibold text-ink">Inicia sesión</h2>
