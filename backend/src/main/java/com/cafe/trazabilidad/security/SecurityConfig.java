@@ -1,5 +1,6 @@
 package com.cafe.trazabilidad.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -39,6 +40,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
+            .exceptionHandling(e -> e.authenticationEntryPoint(
+                (request, response, ex) ->
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No autenticado")))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
