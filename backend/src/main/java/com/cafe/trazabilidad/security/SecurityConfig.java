@@ -40,7 +40,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
-                // Recursos estáticos del SPA Angular y rutas de cliente: públicos.
+                // Catch-all: cualquier otro método sobre /api (PATCH, HEAD, etc.) exige autenticación.
+                .requestMatchers("/api/**").authenticated()
+                // Resto (recursos estáticos del SPA Angular y rutas de cliente): públicos.
                 .anyRequest().permitAll())
             .exceptionHandling(e -> e.authenticationEntryPoint(
                 (request, response, ex) ->
