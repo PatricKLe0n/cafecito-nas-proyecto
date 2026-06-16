@@ -10,4 +10,5 @@ public interface LoteTostadoRepository extends JpaRepository<LoteTostado, Long> 
     Page<LoteTostado> findByPerfilTueste(PerfilTueste perfil, Pageable pageable);
     Page<LoteTostado> findByEstado(EstadoTostado estado, Pageable pageable);
     long countByEstado(EstadoTostado estado);
+    long countByPerfilTuesteAndEstado(PerfilTueste perfil, EstadoTostado estado);
 }

@@ -1,10 +1,12 @@
 package com.cafe.trazabilidad.dashboard;
 
+import com.cafe.trazabilidad.dashboard.dto.PerfilTotal;
 import com.cafe.trazabilidad.dashboard.dto.ResumenResponse;
 import com.cafe.trazabilidad.finca.FincaRepository;
 import com.cafe.trazabilidad.lotetostado.EstadoTostado;
 import com.cafe.trazabilidad.lotetostado.LoteTostado;
 import com.cafe.trazabilidad.lotetostado.LoteTostadoRepository;
+import com.cafe.trazabilidad.lotetostado.PerfilTueste;
 import com.cafe.trazabilidad.loteverde.EstadoLoteVerde;
 import com.cafe.trazabilidad.loteverde.LoteVerdeRepository;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -43,5 +46,14 @@ public class DashboardService {
                     .divide(BigDecimal.valueOf(registrados.size()), 2, RoundingMode.HALF_UP);
 
         return new ResumenResponse(verdesDisponibles, tostadosRegistrados, mermaMedia, totalFincas);
+    }
+
+    /** Distribución de lotes tostados (registrados) por perfil de tueste. */
+    @Transactional(readOnly = true)
+    public List<PerfilTotal> tostadosPorPerfil() {
+        return Arrays.stream(PerfilTueste.values())
+                .map(p -> new PerfilTotal(p.name(),
+                        loteTostadoRepository.countByPerfilTuesteAndEstado(p, EstadoTostado.REGISTRADO)))
+                .toList();
     }
 }

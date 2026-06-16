@@ -1,0 +1,1 @@
+import{a as n}from"./chunk-ZQXN6CGI.js";import{Mb as o,N as t,Pb as i,S as r}from"./chunk-52XCEXR3.js";var c=class e extends n{constructor(){super(r(o),`${i.apiUrl}/lotes-verdes`)}static \u0275fac=function(m){return new(m||e)};static \u0275prov=t({token:e,factory:e.\u0275fac,providedIn:"root"})};export{c as a};

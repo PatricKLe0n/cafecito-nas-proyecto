@@ -47,3 +47,5 @@ export interface Resumen {
   mermaMediaPorcentaje: number;
   totalFincas: number;
 }
+
+export interface PerfilTotal { perfil: string; total: number; }
