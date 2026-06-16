@@ -1,1 +1,0 @@
-import{a as n}from"./chunk-723FF7EQ.js";import{Kb as o,N as r,Nb as i,S as e}from"./chunk-JXGWM5N3.js";var c=class t extends n{constructor(){super(e(o),`${i.apiUrl}/fincas`)}static \u0275fac=function(a){return new(a||t)};static \u0275prov=r({token:t,factory:t.\u0275fac,providedIn:"root"})};export{c as a};

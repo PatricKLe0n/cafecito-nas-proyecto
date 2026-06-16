@@ -1,17 +1,18 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../core/services/auth';
+import { CoffeeMark } from '../shared/coffee-mark';
 
 @Component({
   selector: 'rl-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CoffeeMark],
   template: `
     <div class="flex min-h-screen">
       <aside class="flex w-64 flex-col border-r border-line bg-panel">
         <div class="px-5 pb-4 pt-6">
           <div class="flex items-center gap-2.5">
-            <span class="roast-spectrum h-7 w-7 rounded-md shadow-sm"></span>
+            <rl-coffee-mark [size]="30" class="text-ink-soft" />
             <span class="font-display text-[15px] font-bold leading-none tracking-tight text-ink">ROAST&nbsp;LOG</span>
           </div>
           <div class="eyebrow mt-2.5">Trazabilidad de café</div>

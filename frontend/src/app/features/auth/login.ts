@@ -2,18 +2,19 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
+import { CoffeeMark } from '../../shared/coffee-mark';
 
 @Component({
   selector: 'rl-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CoffeeMark],
   template: `
     <div class="grid min-h-screen lg:grid-cols-2">
       <!-- Panel de identidad -->
       <div class="relative hidden flex-col justify-between overflow-hidden bg-ink p-10 text-paper lg:flex">
         <div class="absolute inset-y-0 left-0 w-1.5 roast-spectrum"></div>
         <div class="flex items-center gap-3">
-          <span class="roast-spectrum h-8 w-8 rounded-md"></span>
+          <rl-coffee-mark [size]="34" class="text-paper/70" />
           <span class="font-display text-lg font-bold tracking-tight">ROAST&nbsp;LOG</span>
         </div>
         <div class="max-w-md">
@@ -39,7 +40,7 @@ import { AuthService } from '../../core/services/auth';
       <div class="flex items-center justify-center p-8">
         <div class="w-full max-w-sm">
           <div class="lg:hidden mb-8 flex items-center gap-2.5">
-            <span class="roast-spectrum h-7 w-7 rounded-md"></span>
+            <rl-coffee-mark [size]="28" class="text-ink-soft" />
             <span class="font-display text-base font-bold tracking-tight text-ink">ROAST&nbsp;LOG</span>
           </div>
           <div class="eyebrow">Acceso</div>
