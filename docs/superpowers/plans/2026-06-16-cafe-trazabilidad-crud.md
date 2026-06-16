@@ -351,10 +351,10 @@ CREATE INDEX idx_lote_tostado_verde ON lote_tostado(lote_verde_id);
 - [ ] **Step 2: Crear `V2__seed.sql`** (hashes BCrypt de `admin123` / `user123`)
 
 ```sql
--- Contraseñas demo: admin123 y user123 (BCrypt, fuerza 10)
+-- Contraseñas demo: admin123 y user123 (BCrypt fuerza 10, verificadas)
 INSERT INTO usuario (username, password, rol) VALUES
- ('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMy.MQDqH1nIz1nBwH6jK1jE5oVxk6QnK0e', 'ADMIN'),
- ('user',  '$2a$10$7EqJtq98hPqEX7fNZaFWoOa8a8aLgkXlS4tYy3W0bM7m1F0Z6cQ2C', 'USER');
+ ('admin', '$2b$10$NUuSY.FC87W/vthhfVnPRe1oFU9meLixGpcnoKbEF8iZsLui/xs9W', 'ADMIN'),
+ ('user',  '$2b$10$9z83hMZxztYsr28OTGJ9/OOfdocbjo1mZ2XG8Jg7wL7aFFJd3nL5u', 'USER');
 
 INSERT INTO finca (pais, region, nombre, productor, altitud_msnm, variedad, proceso) VALUES
  ('Colombia', 'Huila',  'Finca El Mirador',  'Ana Gómez',   1750, 'Caturra', 'LAVADO'),
