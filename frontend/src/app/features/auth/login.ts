@@ -26,12 +26,6 @@ import { CoffeeMark } from '../../shared/coffee-mark';
             Registro de fincas de origen, lotes de café verde y tandas de tostado —
             con control de merma, stock y trazabilidad completa.
           </p>
-          <div class="mt-8">
-            <div class="roast-spectrum h-2 w-full rounded-full"></div>
-            <div class="mt-2 flex justify-between font-mono text-[10px] uppercase tracking-wider text-paper/40">
-              <span>Light</span><span>Medium</span><span>Dark</span>
-            </div>
-          </div>
         </div>
         <div class="font-mono text-[11px] leading-relaxed text-paper/40">
           Hecho por <span class="text-paper/80">Patrick León</span><br>
