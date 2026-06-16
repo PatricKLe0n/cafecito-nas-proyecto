@@ -146,8 +146,6 @@ Para regenerar el bundle que sirve el backend: `npm run build` y copiar `dist/fr
 ├── frontend/                     # SPA Angular 20 + Tailwind (sistema de diseño propio)
 │   └── src/app/                  # core, shared, layout, features
 ├── docs/
-│   ├── superpowers/specs/        # documento de diseño
-│   ├── superpowers/plans/        # plan de implementación por fases
 │   └── screenshots/              # capturas de la UI
 └── README.md
 ```

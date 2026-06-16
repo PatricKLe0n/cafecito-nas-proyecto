@@ -5,6 +5,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad de persistencia que representa una cuenta de usuario del sistema.
+ * Almacena las credenciales de acceso (con la contraseña codificada mediante BCrypt)
+ * y el rol que determina los permisos del usuario dentro de la aplicación.
+ */
 @Getter
 @Setter
 @Entity

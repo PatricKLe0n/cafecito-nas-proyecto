@@ -15,6 +15,21 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+/**
+ * Configuración central de Spring Security para la API.
+ *
+ * <p>Define una cadena de filtros <em>stateless</em>: deshabilita la gestión de sesión
+ * (política {@link SessionCreationPolicy#STATELESS}) y CSRF —innecesario sin sesión— y
+ * delega la identificación del usuario en el {@link JwtAuthFilter}, que se inserta antes
+ * del filtro de usuario y contraseña. Como consecuencia, cada petición debe portar su
+ * propio token JWT; el servidor no conserva estado de autenticación entre llamadas.</p>
+ *
+ * <p>Las reglas de autorización abren los endpoints de login y la documentación OpenAPI,
+ * conceden lectura ({@code GET}) a los roles {@code USER} y {@code ADMIN} y reservan las
+ * operaciones de escritura ({@code POST}, {@code PUT}, {@code DELETE}) al rol {@code ADMIN}.
+ * También expone los beans de codificación de contraseñas (BCrypt) y el
+ * {@link AuthenticationManager} usados por el resto del módulo de seguridad.</p>
+ */
 @Configuration
 public class SecurityConfig {
 

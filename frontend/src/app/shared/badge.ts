@@ -24,6 +24,10 @@ const TONES: Record<Tone, string> = {
     </span>
   `,
 })
+/**
+ * Etiqueta compacta reutilizable. Pinta un texto con un tono predefinido del sistema
+ * de diseño y, opcionalmente, un punto de color para reforzar el estado o la categoría.
+ */
 export class Badge {
   label = input('');
   tone = input<Tone>('neutral');

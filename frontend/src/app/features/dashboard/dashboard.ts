@@ -87,6 +87,13 @@ const GRID = '#EDE6DA';
     </div>
   `,
 })
+/**
+ * Panel de resumen de la operación. Muestra las tarjetas de indicadores y cuatro
+ * gráficos ApexCharts (distribución por perfil, merma por lote, escala de tueste y
+ * stock por origen). Los datos se cargan de forma asíncrona en `ngOnInit` y cada
+ * gráfico se renderiza cuando coinciden datos y vista; las instancias se destruyen
+ * en `ngOnDestroy` para evitar fugas de memoria.
+ */
 export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   private service = inject(DashboardService);
 
@@ -117,6 +124,10 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     this.renderStock();
   }
 
+  /**
+   * Renderiza el donut de distribución por perfil de tueste. Solo actúa cuando hay
+   * datos y la vista está lista, y se marca con `dataset.done` para no repetirse.
+   */
   private renderPerfil() {
     const el = this.perfilEl?.nativeElement;
     const data = this.perfiles;
@@ -140,6 +151,10 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     this.charts.push(chart);
   }
 
+  /**
+   * Renderiza el gráfico de barras de merma por lote, coloreado según el perfil, con
+   * una línea de anotación en la merma media. Se renderiza una sola vez (`dataset.done`).
+   */
   private renderMerma() {
     const el = this.mermaEl?.nativeElement;
     const data = this.mermas;
@@ -164,6 +179,10 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     this.charts.push(chart);
   }
 
+  /**
+   * Renderiza el gráfico de barras horizontales con el stock de café verde por finca.
+   * Se renderiza una sola vez (`dataset.done`).
+   */
   private renderStock() {
     const el = this.stockEl?.nativeElement;
     const data = this.stock;

@@ -4,6 +4,10 @@ import com.cafe.trazabilidad.finca.dto.FincaRequest;
 import com.cafe.trazabilidad.finca.dto.FincaResponse;
 import org.mapstruct.*;
 
+/**
+ * Mapper MapStruct encargado de la conversión entre la entidad {@link Finca} y sus DTOs
+ * de entrada ({@link FincaRequest}) y salida ({@link FincaResponse}).
+ */
 @Mapper(componentModel = "spring")
 public interface FincaMapper {
     FincaResponse toResponse(Finca entity);

@@ -22,6 +22,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Servicio de solo lectura que calcula las métricas y agregaciones del panel de
+ * control: el resumen general, la distribución de lotes tostados por perfil y el
+ * stock de café verde agrupado por finca.
+ */
 @Service
 public class DashboardService {
 
@@ -36,6 +41,13 @@ public class DashboardService {
         this.loteTostadoRepository = loteTostadoRepository;
     }
 
+    /**
+     * Calcula el resumen general del panel: número de lotes verdes disponibles,
+     * lotes tostados registrados, merma media (%) de los lotes tostados registrados
+     * y total de fincas.
+     *
+     * @return el resumen de indicadores generales
+     */
     @Transactional(readOnly = true)
     public ResumenResponse resumen() {
         long verdesDisponibles = loteVerdeRepository.countByEstado(EstadoLoteVerde.DISPONIBLE);
@@ -53,7 +65,12 @@ public class DashboardService {
         return new ResumenResponse(verdesDisponibles, tostadosRegistrados, mermaMedia, totalFincas);
     }
 
-    /** Distribución de lotes tostados (registrados) por perfil de tueste. */
+    /**
+     * Calcula la distribución de lotes tostados registrados por perfil de tueste,
+     * incluyendo todos los perfiles aunque su total sea cero.
+     *
+     * @return lista con el total de lotes registrados por cada perfil de tueste
+     */
     @Transactional(readOnly = true)
     public List<PerfilTotal> tostadosPorPerfil() {
         return Arrays.stream(PerfilTueste.values())
@@ -62,7 +79,12 @@ public class DashboardService {
                 .toList();
     }
 
-    /** Stock de café verde (kg) agrupado por finca, de mayor a menor. */
+    /**
+     * Calcula el stock de café verde (kg) agrupado por finca de origen, excluyendo
+     * las fincas sin stock y ordenando el resultado de mayor a menor cantidad.
+     *
+     * @return lista de fincas con su stock de café verde, de mayor a menor
+     */
     @Transactional(readOnly = true)
     public List<StockPorFinca> stockPorFinca() {
         Map<String, BigDecimal> porFinca = new LinkedHashMap<>();

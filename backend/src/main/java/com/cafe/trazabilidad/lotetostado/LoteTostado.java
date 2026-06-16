@@ -9,6 +9,14 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad que representa una tanda de tostado obtenida a partir de un
+ * {@link LoteCafeVerde}. Registra los pesos de entrada y salida, la merma
+ * resultante del proceso, el perfil de tueste aplicado y el estado de la tanda.
+ * <p>
+ * La merma (porcentaje) se calcula en el servidor a partir de los pesos de
+ * entrada y salida; el estado controla si la tanda está vigente o anulada.
+ */
 @Getter
 @Setter
 @Entity

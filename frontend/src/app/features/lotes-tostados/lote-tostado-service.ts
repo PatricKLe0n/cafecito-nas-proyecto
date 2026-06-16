@@ -4,6 +4,7 @@ import { CrudService } from '../../core/services/crud';
 import { environment } from '../../../environments/environment';
 import { LoteTostado, LoteTostadoRequest } from '../../core/models';
 
+/** CRUD de tandas de tostado sobre el endpoint `/lotes-tostados`. */
 @Injectable({ providedIn: 'root' })
 export class LoteTostadoService extends CrudService<LoteTostado, LoteTostadoRequest> {
   constructor() {

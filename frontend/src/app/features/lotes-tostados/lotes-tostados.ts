@@ -130,6 +130,12 @@ const ROAST_DOT: Record<PerfilTueste, string> = {
       (confirm)="confirmarAnular()" (cancel)="aAnular.set(null)" />
   `,
 })
+/**
+ * Pantalla de gestión de tandas de tostado. Lista los lotes tostados de forma paginada
+ * con búsqueda por código y filtro por perfil, y carga los lotes verdes disponibles para
+ * el panel de alta/edición, donde se calcula la merma en vivo. Las acciones de edición y
+ * anulación (con confirmación) solo aplican a tandas `REGISTRADO` y a administradores.
+ */
 export class LotesTostados implements OnInit {
   private service = inject(LoteTostadoService);
   private verdeService = inject(LoteVerdeService);
@@ -155,6 +161,11 @@ export class LotesTostados implements OnInit {
     fechaTueste: ['', Validators.required],
   });
 
+  /**
+   * Merma estimada en vivo a partir de los pesos del formulario, como `(entrada - salida)
+   * / entrada * 100` con dos decimales. Devuelve `'0.00'` mientras los pesos no sean
+   * válidos o la salida no sea menor que la entrada.
+   */
   mermaEstimada = computed(() => {
     const e = Number(this.form.controls.pesoEntradaKg.value);
     const s = Number(this.form.controls.pesoSalidaKg.value);
@@ -180,6 +191,7 @@ export class LotesTostados implements OnInit {
   dot(p: PerfilTueste): string { return ROAST_DOT[p]; }
 
   nuevo() { this.editando.set(null); this.form.reset({ perfilTueste: 'MEDIUM' }); this.form.controls.loteVerdeId.enable(); this.errorApi.set(null); this.panelAbierto.set(true); }
+  /** Abre el panel en modo edición; el lote verde de origen se deshabilita por no ser modificable. */
   editar(t: LoteTostado) {
     this.editando.set(t);
     this.form.patchValue({
@@ -193,6 +205,10 @@ export class LotesTostados implements OnInit {
   }
   cerrar() { this.panelAbierto.set(false); this.form.controls.loteVerdeId.enable(); }
 
+  /**
+   * Persiste el formulario: actualiza si hay registro en edición o crea uno nuevo.
+   * Al tener éxito cierra el panel y recarga; si falla muestra el mensaje del backend.
+   */
   guardar() {
     if (this.form.invalid) return;
     const body = this.form.getRawValue() as LoteTostadoRequest;
@@ -204,6 +220,10 @@ export class LotesTostados implements OnInit {
     });
   }
 
+  /**
+   * Anula la tanda marcada en `aAnular`. La anulación devuelve el peso de entrada al
+   * stock del lote verde de origen; si el backend lo rechaza, se notifica el motivo.
+   */
   confirmarAnular() {
     const t = this.aAnular();
     if (!t) return;

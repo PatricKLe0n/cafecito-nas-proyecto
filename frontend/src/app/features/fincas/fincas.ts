@@ -116,6 +116,11 @@ import { ModalConfirmacion } from '../../shared/modal-confirmacion';
       (confirm)="confirmarBorrado()" (cancel)="aBorrar.set(null)" />
   `,
 })
+/**
+ * Pantalla de gestión de fincas de origen. Presenta el listado paginado con búsqueda
+ * por nombre o región y, para administradores, un panel lateral de alta/edición y un
+ * modal de confirmación para el borrado. Los usuarios sin rol `ADMIN` solo leen.
+ */
 export class Fincas implements OnInit {
   private service = inject(FincaService);
   private fb = inject(FormBuilder);
@@ -155,6 +160,10 @@ export class Fincas implements OnInit {
   editar(f: Finca) { this.editando.set(f); this.form.patchValue(f); this.errorApi.set(null); this.panelAbierto.set(true); }
   cerrar() { this.panelAbierto.set(false); }
 
+  /**
+   * Persiste el formulario: actualiza si hay registro en edición o crea uno nuevo.
+   * Al tener éxito cierra el panel y recarga; si falla muestra el mensaje del backend.
+   */
   guardar() {
     if (this.form.invalid) return;
     const body = this.form.getRawValue() as FincaRequest;
@@ -166,6 +175,10 @@ export class Fincas implements OnInit {
     });
   }
 
+  /**
+   * Elimina la finca marcada en `aBorrar`. El backend rechaza el borrado si tiene
+   * lotes asociados; en ese caso se notifica el motivo.
+   */
   confirmarBorrado() {
     const f = this.aBorrar();
     if (!f) return;

@@ -5,6 +5,20 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad que representa una finca de origen del café, es decir, el punto de partida
+ * de la trazabilidad "de la finca a la taza".
+ *
+ * <p>Modela el lugar físico donde se cultiva y procesa el grano: su ubicación geográfica
+ * (país, región, altitud), el productor responsable, la variedad cultivada y el proceso
+ * de beneficio aplicado al grano.</p>
+ *
+ * <p>Invariantes clave:</p>
+ * <ul>
+ *   <li>El {@code nombre} es único dentro del sistema.</li>
+ *   <li>Una finca no puede eliminarse mientras tenga lotes de café verde asociados.</li>
+ * </ul>
+ */
 @Getter
 @Setter
 @Entity

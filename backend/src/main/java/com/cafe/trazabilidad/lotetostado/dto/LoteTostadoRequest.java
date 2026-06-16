@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/** Datos de entrada para crear o actualizar un lote tostado (la merma y el estado los calcula el servidor). */
 public record LoteTostadoRequest(
         @NotBlank String codigo,
         @NotNull Long loteVerdeId,

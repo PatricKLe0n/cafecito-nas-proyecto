@@ -17,6 +17,11 @@ import { Component, input, output } from '@angular/core';
     </div>
   `,
 })
+/**
+ * Controles de paginación reutilizables. Recibe el estado de la página actual y emite
+ * por `change` el índice de la página solicitada al pulsar Anterior/Siguiente. No carga
+ * datos: delega esa responsabilidad en el componente contenedor.
+ */
 export class Paginador {
   page = input(0);
   totalPages = input(0);

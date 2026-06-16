@@ -9,6 +9,21 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * Entidad que representa un lote de café verde (grano crudo) recibido desde una finca de origen.
+ *
+ * <p>Modela una recepción concreta de café sin tostar, identificada por un código único y
+ * caracterizada por su finca de procedencia, fecha de recepción y atributos de calidad
+ * (humedad y puntaje SCA).</p>
+ *
+ * <p>Invariantes clave:</p>
+ * <ul>
+ *   <li>El {@code codigo} es único dentro del sistema.</li>
+ *   <li>El {@code pesoKg} representa el stock de café verde disponible.</li>
+ *   <li>El {@code estado} refleja la disponibilidad del lote: {@code DISPONIBLE} o {@code AGOTADO}.</li>
+ *   <li>Un lote no puede eliminarse mientras tenga lotes tostados asociados.</li>
+ * </ul>
+ */
 @Getter
 @Setter
 @Entity

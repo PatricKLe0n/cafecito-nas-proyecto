@@ -113,6 +113,12 @@ import { ModalConfirmacion } from '../../shared/modal-confirmacion';
       (confirm)="confirmarBorrado()" (cancel)="aBorrar.set(null)" />
   `,
 })
+/**
+ * Pantalla de gestión de lotes de café verde. Lista los lotes de forma paginada con
+ * búsqueda por código y filtro por estado, y carga las fincas para el selector del
+ * panel de alta/edición. Las acciones de escritura y el borrado (con confirmación)
+ * quedan reservadas a administradores.
+ */
 export class LotesVerdes implements OnInit {
   private service = inject(LoteVerdeService);
   private fincaService = inject(FincaService);
@@ -163,6 +169,10 @@ export class LotesVerdes implements OnInit {
   }
   cerrar() { this.panelAbierto.set(false); }
 
+  /**
+   * Persiste el formulario: actualiza si hay registro en edición o crea uno nuevo.
+   * Al tener éxito cierra el panel y recarga; si falla muestra el mensaje del backend.
+   */
   guardar() {
     if (this.form.invalid) return;
     const body = this.form.getRawValue() as LoteVerdeRequest;
@@ -174,6 +184,10 @@ export class LotesVerdes implements OnInit {
     });
   }
 
+  /**
+   * Elimina el lote verde marcado en `aBorrar`. El backend lo rechaza si tiene tostados
+   * asociados; en ese caso se notifica el motivo.
+   */
   confirmarBorrado() {
     const l = this.aBorrar();
     if (!l) return;

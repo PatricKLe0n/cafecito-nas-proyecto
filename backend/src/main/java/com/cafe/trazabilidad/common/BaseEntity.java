@@ -5,6 +5,13 @@ import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
 
+/**
+ * Superclase base para las entidades de persistencia del dominio.
+ *
+ * <p>Aporta el identificador autogenerado y la marca de tiempo de creación, que se asigna
+ * automáticamente la primera vez que la entidad se persiste y permanece inmutable. Las
+ * entidades concretas heredan estos atributos comunes para evitar duplicarlos.</p>
+ */
 @Getter
 @Setter
 @MappedSuperclass

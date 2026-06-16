@@ -15,6 +15,15 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+/**
+ * Manejador global de excepciones para toda la API.
+ *
+ * <p>Centraliza la traducción de las excepciones lanzadas por los controladores a
+ * respuestas HTTP coherentes, representadas mediante el payload {@link ApiError}. Cada
+ * manejador asocia un tipo de excepción (recurso no encontrado, regla de negocio, errores
+ * de validación, acceso denegado, autenticación, etc.) con su código de estado adecuado,
+ * garantizando un formato de error uniforme en todo el sistema.</p>
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

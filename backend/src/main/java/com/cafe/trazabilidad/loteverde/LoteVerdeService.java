@@ -13,6 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Servicio que concentra la lógica de negocio transaccional de los lotes de café verde (stock).
+ *
+ * <p>Garantiza las reglas del dominio: unicidad del código de lote, existencia de la finca de
+ * procedencia, derivación del estado de disponibilidad a partir del peso y la prohibición de
+ * eliminar un lote que ya tenga lotes tostados asociados.</p>
+ */
 @Service
 public class LoteVerdeService {
 
@@ -29,6 +36,16 @@ public class LoteVerdeService {
         this.mapper = mapper;
     }
 
+    /**
+     * Lista los lotes de café verde de forma paginada. El filtro por {@code estado} tiene
+     * prioridad sobre la búsqueda por código; si no se indica estado y se proporciona un término
+     * de búsqueda, filtra por coincidencia parcial (sin distinguir mayúsculas) en el código.
+     *
+     * @param estado   estado de disponibilidad por el que filtrar; opcional
+     * @param q        término de búsqueda por código; opcional, ignorado si se indica estado
+     * @param pageable parámetros de paginación y ordenación
+     * @return página de lotes de café verde convertidos a su representación de salida
+     */
     @Transactional(readOnly = true)
     public PageResponse<LoteVerdeResponse> listar(String q, EstadoLoteVerde estado, Pageable pageable) {
         Page<LoteCafeVerde> page;
@@ -42,11 +59,30 @@ public class LoteVerdeService {
         return PageResponse.from(page.map(mapper::toResponse));
     }
 
+    /**
+     * Obtiene un lote de café verde por su identificador.
+     *
+     * @param id identificador del lote
+     * @return el lote encontrado en su representación de salida
+     * @throws RecursoNoEncontradoException si no existe ningún lote con ese identificador
+     */
     @Transactional(readOnly = true)
     public LoteVerdeResponse obtener(Long id) {
         return mapper.toResponse(buscar(id));
     }
 
+    /**
+     * Crea un nuevo lote de café verde.
+     *
+     * <p>Reglas de negocio: el código del lote debe ser único (sin distinguir mayúsculas) y la
+     * finca de procedencia debe existir. El estado inicial se deriva del peso: {@code DISPONIBLE}
+     * si el peso es positivo, {@code AGOTADO} en caso contrario.</p>
+     *
+     * @param req datos del lote a crear
+     * @return el lote creado en su representación de salida
+     * @throws ReglaNegocioException        si ya existe un lote con el mismo código
+     * @throws RecursoNoEncontradoException si la finca indicada no existe
+     */
     @Transactional
     public LoteVerdeResponse crear(LoteVerdeRequest req) {
         if (repo.existsByCodigoIgnoreCase(req.codigo())) {
@@ -60,6 +96,16 @@ public class LoteVerdeService {
         return mapper.toResponse(repo.save(lote));
     }
 
+    /**
+     * Actualiza los datos de un lote de café verde existente.
+     *
+     * <p>Regla de negocio: la finca de procedencia indicada debe existir.</p>
+     *
+     * @param id  identificador del lote a actualizar
+     * @param req nuevos datos del lote
+     * @return el lote actualizado en su representación de salida
+     * @throws RecursoNoEncontradoException si el lote o la finca indicada no existen
+     */
     @Transactional
     public LoteVerdeResponse actualizar(Long id, LoteVerdeRequest req) {
         LoteCafeVerde lote = buscar(id);
@@ -69,6 +115,16 @@ public class LoteVerdeService {
         return mapper.toResponse(repo.save(lote));
     }
 
+    /**
+     * Elimina un lote de café verde.
+     *
+     * <p>Regla de negocio: no se permite eliminar un lote que tenga lotes tostados asociados,
+     * para preservar la integridad de la trazabilidad (conflicto 409).</p>
+     *
+     * @param id identificador del lote a eliminar
+     * @throws RecursoNoEncontradoException si no existe ningún lote con ese identificador
+     * @throws ReglaNegocioException        si el lote tiene lotes tostados asociados
+     */
     @Transactional
     public void eliminar(Long id) {
         if (!repo.existsById(id)) {

@@ -80,6 +80,11 @@ import { CoffeeMark } from '../../shared/coffee-mark';
     </div>
   `,
 })
+/**
+ * Pantalla de inicio de sesión. Recoge las credenciales mediante un formulario
+ * reactivo, delega la autenticación en {@link AuthService} y, al tener éxito,
+ * navega al dashboard. En caso de error muestra un mensaje de credenciales inválidas.
+ */
 export class Login {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
@@ -93,6 +98,7 @@ export class Login {
     password: ['', Validators.required],
   });
 
+  /** Envía las credenciales; gestiona los estados de carga y error de la petición. */
   enviar() {
     if (this.form.invalid) return;
     this.cargando.set(true);

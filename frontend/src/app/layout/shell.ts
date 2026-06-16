@@ -61,11 +61,16 @@ import { CoffeeMark } from '../shared/coffee-mark';
     </div>
   `,
 })
+/**
+ * Marco de la aplicación autenticada: barra lateral de navegación entre las secciones
+ * de trazabilidad, tarjeta del usuario en sesión y un `router-outlet` para la vista activa.
+ */
 export class Shell {
   auth = inject(AuthService);
   private router = inject(Router);
   inicial = computed(() => (this.auth.user() ?? '?').charAt(0));
 
+  /** Cierra la sesión y redirige a la pantalla de login. */
   salir() {
     this.auth.logout();
     this.router.navigate(['/login']);

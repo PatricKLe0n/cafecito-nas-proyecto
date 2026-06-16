@@ -19,6 +19,11 @@ import { Component, input, output } from '@angular/core';
     }
   `,
 })
+/**
+ * Diálogo de confirmación reutilizable para acciones sensibles (eliminar, anular…).
+ * Su visibilidad la controla el contenedor mediante `open`, y emite `confirm` o `cancel`
+ * según la decisión del usuario; cerrar por el fondo equivale a cancelar.
+ */
 export class ModalConfirmacion {
   open = input(false);
   title = input('Confirmar');
