@@ -2452,6 +2452,13 @@ git commit -m "feat(docs): OpenAPI con esquema de seguridad Bearer JWT"
 
 # FASE 7 — Frontend Angular + Tailwind
 
+> **Nota de ejecución (divergencia respecto al plan original):** el frontend se implementó en **Angular 20**
+> (convenciones nuevas: clase `App`, `*.ts` sin sufijo `.component`, signal inputs, control‑flow `@if/@for`) por
+> compatibilidad con Node 24, y con un **sistema de diseño propio "Roast Log"** (paleta papel/espresso + acento
+> verdigris + espectro de tueste funcional; tipografías Space Grotesk / Inter / IBM Plex Mono) en lugar de la
+> paleta genérica espresso/crema/ámbar que se describe abajo. La lógica (servicios, signals, interceptor JWT,
+> guards, formularios reactivos, CRUD por rol) se mantiene fiel a las tareas siguientes. Ver `docs/screenshots/`.
+
 ## Task 7.1: Scaffold Angular + Tailwind
 
 **Files:**
