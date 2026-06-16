@@ -17,7 +17,7 @@
 - Comandos backend se ejecutan desde `backend/`; comandos frontend desde `frontend/`.
 - Paquete raíz backend: `com.cafe.trazabilidad`.
 - Cada tarea termina en commit. Mensajes en estilo Conventional Commits.
-- Para correr el backend: PostgreSQL debe estar accesible en `localhost:5432` con BD `cafe_trazabilidad` (ver Tarea 0.1).
+- Para correr el backend: PostgreSQL debe estar accesible con BD `cafe_trazabilidad` (ver Tarea 0.1). El puerto se configura con `DB_PORT` (por defecto 5432; **en esta máquina de desarrollo se usa 5433** porque el 5432 estaba ocupado). Ejemplo local: `DB_PORT=5433 mvn spring-boot:run`.
 
 ---
 
@@ -237,7 +237,7 @@ spring:
   application:
     name: trazabilidad-cafe
   datasource:
-    url: jdbc:postgresql://localhost:5432/cafe_trazabilidad
+    url: jdbc:postgresql://localhost:${DB_PORT:5432}/cafe_trazabilidad
     username: ${DB_USER:cafe}
     password: ${DB_PASSWORD:cafe}
   jpa:
@@ -289,6 +289,8 @@ git commit -m "chore(backend): scaffold proyecto Spring Boot con dependencias ba
 
 > Requisito de entorno: crear la BD una vez. Con psql:
 > `CREATE DATABASE cafe_trazabilidad;` y un rol `cafe`/`cafe` con permisos, o ajusta `application.yml`.
+> En esta máquina ya está hecho: servidor en `localhost:5433`, rol `cafe`/`cafe` (superuser),
+> base `cafe_trazabilidad`. Para arrancar el backend localmente exporta `DB_PORT=5433`.
 
 - [ ] **Step 1: Crear `V1__schema.sql`**
 
@@ -3852,7 +3854,7 @@ y documentación OpenAPI.
 ## Requisitos
 - Java 21, Maven 3.9+
 - Node 20+ y npm
-- PostgreSQL 16 en `localhost:5432`
+- PostgreSQL 16 en `localhost:5432` (configurable con `DB_PORT`)
 
 ## Puesta en marcha
 
@@ -3863,6 +3865,9 @@ CREATE USER cafe WITH PASSWORD 'cafe';
 GRANT ALL PRIVILEGES ON DATABASE cafe_trazabilidad TO cafe;
 ```
 (O ajusta credenciales en `backend/src/main/resources/application.yml`.)
+
+> **Puerto:** por defecto el backend usa el 5432. Si tu PostgreSQL escucha en otro puerto,
+> arráncalo con `DB_PORT`, p. ej. `DB_PORT=5433 mvn spring-boot:run`.
 
 ### 2. Backend
 ```bash
