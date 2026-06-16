@@ -37,6 +37,8 @@ estados y **anulación con devolución de stock**. Incluye **autenticación JWT 
 - **Manejo global de errores** con respuesta JSON consistente y códigos correctos (400 / 401 / 403 / 404 / 409).
 - **Diseño de UI intencional** (no plantilla genérica): identidad de tostaduría, tipografía Space Grotesk +
   IBM Plex Mono, y un **espectro de tueste** funcional que codifica los perfiles Light / Medium / Dark.
+- **Docker Compose (virtualización):** un único `docker compose up` levanta BD + backend + frontend detrás de
+  **una sola URL** (nginx sirve la SPA y hace de proxy a la API). Sin instalar nada más.
 
 ---
 
@@ -58,7 +60,24 @@ estados y **anulación con devolución de stock**. Incluye **autenticación JWT 
 
 ## 🚀 Puesta en marcha
 
-### 1. Base de datos
+### Opción A — Docker 🐳 (recomendado: un comando, una sola URL)
+
+Requiere Docker Desktop. Desde la raíz del proyecto:
+
+```bash
+docker compose up --build
+```
+
+Luego abre **http://localhost:8080** y listo. Un contenedor **nginx** sirve la SPA Angular y reenvía `/api`
+al backend; **PostgreSQL** se levanta y se siembra solo con Flyway. No hay que abrir varios puertos: **todo
+(app + API + Swagger en `/swagger-ui.html`) vive tras esa única URL**. Para detener: `docker compose down`
+(añade `-v` para borrar también el volumen de datos).
+
+### Opción B — Nativo (sin Docker)
+
+> En modo nativo el frontend (live‑reload) y la API corren por separado: app en `:4200`, API en `:8080`.
+
+#### 1. Base de datos
 
 ```sql
 CREATE DATABASE cafe_trazabilidad;
@@ -70,7 +89,7 @@ GRANT ALL PRIVILEGES ON DATABASE cafe_trazabilidad TO cafe;
 > variable `DB_PORT` (p. ej. `DB_PORT=5433 mvn spring-boot:run`). Credenciales/puerto se pueden ajustar en
 > `backend/src/main/resources/application.yml` o por variables de entorno (`DB_USER`, `DB_PASSWORD`, `DB_PORT`).
 
-### 2. Backend
+#### 2. Backend
 
 ```bash
 cd backend
@@ -81,7 +100,7 @@ mvn spring-boot:run
 - Swagger UI:  `http://localhost:8080/swagger-ui.html`
 - **Flyway** crea el esquema y carga los datos demo automáticamente en el primer arranque.
 
-### 3. Frontend
+#### 3. Frontend
 
 ```bash
 cd frontend

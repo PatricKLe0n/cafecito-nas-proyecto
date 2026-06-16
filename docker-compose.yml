@@ -1,0 +1,41 @@
+# Trazabilidad de Café — un solo comando, una sola URL.
+#   docker compose up --build   →   http://localhost:8080
+#
+# nginx (web) sirve la SPA Angular y hace proxy de /api al backend; el backend
+# habla con PostgreSQL. Solo se expone el puerto del frontend.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: cafe_trazabilidad
+      POSTGRES_USER: cafe
+      POSTGRES_PASSWORD: cafe
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cafe -d cafe_trazabilidad"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build: ./backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/cafe_trazabilidad
+      DB_USER: cafe
+      DB_PASSWORD: cafe
+      FRONTEND_ORIGIN: http://localhost:8080
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
