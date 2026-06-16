@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .rl-input {
+    @apply mt-1.5 w-full rounded-md border border-line bg-panel px-3 py-2 text-sm text-ink outline-none transition;
+  }
+  .rl-input:focus { @apply border-verdigris; }
+}
+
+html, body { height: 100%; }
+body {
+  @apply bg-paper text-ink font-sans antialiased;
+  background-image:
+    radial-gradient(circle at 100% 0%, rgba(47,111,98,0.05), transparent 40%);
+}
+
+/* Firma: rampa calibrada del espectro de tueste (Light -> Medium -> Dark) */
+.roast-spectrum {
+  background: linear-gradient(90deg, #C99A57 0%, #9C5B2E 52%, #4A2E20 100%);
+}
+
+/* Cifras de instrumento: monoespaciada con dígitos tabulares */
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* Eyebrow / etiqueta técnica */
+.eyebrow {
+  @apply font-mono text-[11px] uppercase tracking-[0.18em] text-ink-soft;
+}
+
+/* Foco visible accesible */
+*:focus-visible {
+  outline: 2px solid theme('colors.verdigris');
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
