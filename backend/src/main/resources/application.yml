@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: trazabilidad-cafe
+  datasource:
+    url: jdbc:postgresql://localhost:${DB_PORT:5432}/cafe_trazabilidad
+    username: ${DB_USER:cafe}
+    password: ${DB_PASSWORD:cafe}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate.format_sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:Y2FmZS10cmF6YWJpbGlkYWQtc2VjcmV0by1kZW1vLTI1Ni1iaXRzLW1pbmltbw==}
+    issuer: trazabilidad-cafe
+    expiration-minutes: 120
+  cors:
+    allowed-origin: ${FRONTEND_ORIGIN:http://localhost:4200}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    org.hibernate.SQL: debug

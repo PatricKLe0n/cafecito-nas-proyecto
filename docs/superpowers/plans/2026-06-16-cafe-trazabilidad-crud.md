@@ -17,7 +17,7 @@
 - Comandos backend se ejecutan desde `backend/`; comandos frontend desde `frontend/`.
 - Paquete raíz backend: `com.cafe.trazabilidad`.
 - Cada tarea termina en commit. Mensajes en estilo Conventional Commits.
-- Para correr el backend: PostgreSQL debe estar accesible en `localhost:5432` con BD `cafe_trazabilidad` (ver Tarea 0.1).
+- Para correr el backend: PostgreSQL debe estar accesible con BD `cafe_trazabilidad` (ver Tarea 0.1). El puerto se configura con `DB_PORT` (por defecto 5432; **en esta máquina de desarrollo se usa 5433** porque el 5432 estaba ocupado). Ejemplo local: `DB_PORT=5433 mvn spring-boot:run`.
 
 ---
 
@@ -237,7 +237,7 @@ spring:
   application:
     name: trazabilidad-cafe
   datasource:
-    url: jdbc:postgresql://localhost:5432/cafe_trazabilidad
+    url: jdbc:postgresql://localhost:${DB_PORT:5432}/cafe_trazabilidad
     username: ${DB_USER:cafe}
     password: ${DB_PASSWORD:cafe}
   jpa:
@@ -289,6 +289,8 @@ git commit -m "chore(backend): scaffold proyecto Spring Boot con dependencias ba
 
 > Requisito de entorno: crear la BD una vez. Con psql:
 > `CREATE DATABASE cafe_trazabilidad;` y un rol `cafe`/`cafe` con permisos, o ajusta `application.yml`.
+> En esta máquina ya está hecho: servidor en `localhost:5433`, rol `cafe`/`cafe` (superuser),
+> base `cafe_trazabilidad`. Para arrancar el backend localmente exporta `DB_PORT=5433`.
 
 - [ ] **Step 1: Crear `V1__schema.sql`**
 
@@ -349,10 +351,10 @@ CREATE INDEX idx_lote_tostado_verde ON lote_tostado(lote_verde_id);
 - [ ] **Step 2: Crear `V2__seed.sql`** (hashes BCrypt de `admin123` / `user123`)
 
 ```sql
--- Contraseñas demo: admin123 y user123 (BCrypt, fuerza 10)
+-- Contraseñas demo: admin123 y user123 (BCrypt fuerza 10, verificadas)
 INSERT INTO usuario (username, password, rol) VALUES
- ('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMy.MQDqH1nIz1nBwH6jK1jE5oVxk6QnK0e', 'ADMIN'),
- ('user',  '$2a$10$7EqJtq98hPqEX7fNZaFWoOa8a8aLgkXlS4tYy3W0bM7m1F0Z6cQ2C', 'USER');
+ ('admin', '$2b$10$NUuSY.FC87W/vthhfVnPRe1oFU9meLixGpcnoKbEF8iZsLui/xs9W', 'ADMIN'),
+ ('user',  '$2b$10$9z83hMZxztYsr28OTGJ9/OOfdocbjo1mZ2XG8Jg7wL7aFFJd3nL5u', 'USER');
 
 INSERT INTO finca (pais, region, nombre, productor, altitud_msnm, variedad, proceso) VALUES
  ('Colombia', 'Huila',  'Finca El Mirador',  'Ana Gómez',   1750, 'Caturra', 'LAVADO'),
@@ -476,6 +478,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -507,6 +510,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiError> accesoDenegado(AccessDeniedException ex, HttpServletRequest req) {
         return build(HttpStatus.FORBIDDEN, "Acceso denegado", req, List.of());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiError> autenticacion(AuthenticationException ex, HttpServletRequest req) {
+        return build(HttpStatus.UNAUTHORIZED, "Credenciales inválidas", req, List.of());
     }
 
     @ExceptionHandler(Exception.class)
@@ -860,6 +868,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 ```java
 package com.cafe.trazabilidad.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -893,12 +902,16 @@ public class SecurityConfig {
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
+            .exceptionHandling(e -> e.authenticationEntryPoint(
+                (request, response, ex) ->
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No autenticado")))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -2439,6 +2452,13 @@ git commit -m "feat(docs): OpenAPI con esquema de seguridad Bearer JWT"
 
 # FASE 7 — Frontend Angular + Tailwind
 
+> **Nota de ejecución (divergencia respecto al plan original):** el frontend se implementó en **Angular 20**
+> (convenciones nuevas: clase `App`, `*.ts` sin sufijo `.component`, signal inputs, control‑flow `@if/@for`) por
+> compatibilidad con Node 24, y con un **sistema de diseño propio "Roast Log"** (paleta papel/espresso + acento
+> verdigris + espectro de tueste funcional; tipografías Space Grotesk / Inter / IBM Plex Mono) en lugar de la
+> paleta genérica espresso/crema/ámbar que se describe abajo. La lógica (servicios, signals, interceptor JWT,
+> guards, formularios reactivos, CRUD por rol) se mantiene fiel a las tareas siguientes. Ver `docs/screenshots/`.
+
 ## Task 7.1: Scaffold Angular + Tailwind
 
 **Files:**
@@ -3852,7 +3872,7 @@ y documentación OpenAPI.
 ## Requisitos
 - Java 21, Maven 3.9+
 - Node 20+ y npm
-- PostgreSQL 16 en `localhost:5432`
+- PostgreSQL 16 en `localhost:5432` (configurable con `DB_PORT`)
 
 ## Puesta en marcha
 
@@ -3863,6 +3883,9 @@ CREATE USER cafe WITH PASSWORD 'cafe';
 GRANT ALL PRIVILEGES ON DATABASE cafe_trazabilidad TO cafe;
 ```
 (O ajusta credenciales en `backend/src/main/resources/application.yml`.)
+
+> **Puerto:** por defecto el backend usa el 5432. Si tu PostgreSQL escucha en otro puerto,
+> arráncalo con `DB_PORT`, p. ej. `DB_PORT=5433 mvn spring-boot:run`.
 
 ### 2. Backend
 ```bash
