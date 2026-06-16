@@ -107,6 +107,10 @@ Reglas de negocio (en `LoteTostadoService`, transaccional):
    si el stock resultante es 0 → el lote verde pasa a `AGOTADO`.
 5. Al anular (DELETE lógico → estado ANULADO): se devuelve el peso al lote verde
    y se recalcula su estado.
+6. **Edición (PUT):** solo se permiten cambios en campos que no afectan al stock
+   (`codigo`, `perfilTueste`, `fechaTueste`). Los pesos (`pesoEntradaKg`,
+   `pesoSalidaKg`) no son editables tras el alta; para corregirlos se anula el
+   lote y se crea uno nuevo. Así se evita la re-conciliación compleja de stock.
 
 ### 2.4. Usuario y Rol (seguridad)
 
