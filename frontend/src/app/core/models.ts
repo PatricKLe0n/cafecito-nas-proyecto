@@ -49,3 +49,4 @@ export interface Resumen {
 }
 
 export interface PerfilTotal { perfil: string; total: number; }
+export interface StockPorFinca { finca: string; stockKg: number; }

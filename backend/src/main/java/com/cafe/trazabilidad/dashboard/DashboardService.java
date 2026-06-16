@@ -2,12 +2,14 @@ package com.cafe.trazabilidad.dashboard;
 
 import com.cafe.trazabilidad.dashboard.dto.PerfilTotal;
 import com.cafe.trazabilidad.dashboard.dto.ResumenResponse;
+import com.cafe.trazabilidad.dashboard.dto.StockPorFinca;
 import com.cafe.trazabilidad.finca.FincaRepository;
 import com.cafe.trazabilidad.lotetostado.EstadoTostado;
 import com.cafe.trazabilidad.lotetostado.LoteTostado;
 import com.cafe.trazabilidad.lotetostado.LoteTostadoRepository;
 import com.cafe.trazabilidad.lotetostado.PerfilTueste;
 import com.cafe.trazabilidad.loteverde.EstadoLoteVerde;
+import com.cafe.trazabilidad.loteverde.LoteCafeVerde;
 import com.cafe.trazabilidad.loteverde.LoteVerdeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DashboardService {
@@ -54,6 +59,20 @@ public class DashboardService {
         return Arrays.stream(PerfilTueste.values())
                 .map(p -> new PerfilTotal(p.name(),
                         loteTostadoRepository.countByPerfilTuesteAndEstado(p, EstadoTostado.REGISTRADO)))
+                .toList();
+    }
+
+    /** Stock de café verde (kg) agrupado por finca, de mayor a menor. */
+    @Transactional(readOnly = true)
+    public List<StockPorFinca> stockPorFinca() {
+        Map<String, BigDecimal> porFinca = new LinkedHashMap<>();
+        for (LoteCafeVerde l : loteVerdeRepository.findAll()) {
+            porFinca.merge(l.getFinca().getNombre(), l.getPesoKg(), BigDecimal::add);
+        }
+        return porFinca.entrySet().stream()
+                .filter(e -> e.getValue().signum() > 0)
+                .map(e -> new StockPorFinca(e.getKey(), e.getValue()))
+                .sorted(Comparator.comparing(StockPorFinca::stockKg).reversed())
                 .toList();
     }
 }
