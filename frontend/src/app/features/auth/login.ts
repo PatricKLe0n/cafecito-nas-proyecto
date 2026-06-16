@@ -33,7 +33,10 @@ import { CoffeeMark } from '../../shared/coffee-mark';
             </div>
           </div>
         </div>
-        <div class="font-mono text-[11px] text-paper/30">v1.0 · trazabilidad-cafe</div>
+        <div class="font-mono text-[11px] leading-relaxed text-paper/40">
+          Hecho por <span class="text-paper/80">Patrick León</span><br>
+          <span class="text-paper/25">v1.0 · trazabilidad de café</span>
+        </div>
       </div>
 
       <!-- Formulario -->
@@ -76,6 +79,8 @@ import { CoffeeMark } from '../../shared/coffee-mark';
               <span>user / user123</span><span class="text-right">solo lectura</span>
             </div>
           </div>
+
+          <p class="lg:hidden mt-6 text-center font-mono text-[11px] text-ink-soft/55">Hecho por Patrick León</p>
         </div>
       </div>
     </div>
