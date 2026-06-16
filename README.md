@@ -9,6 +9,9 @@ Finca (origen)  →  Lote de café verde  →  Lote tostado
 Cada eslabón se registra con sus reglas de negocio: control de **stock**, cálculo de **merma de tueste**,
 estados y **anulación con devolución de stock**. Incluye **autenticación JWT por roles** y **documentación OpenAPI**.
 
+> El frontend Angular viene **compilado y empaquetado dentro del backend**: al arrancar, **todo (app + API +
+> Swagger) se sirve desde una única URL: `http://localhost:8080`**.
+
 ![Login](docs/screenshots/01-login.png)
 
 ---
@@ -35,10 +38,10 @@ estados y **anulación con devolución de stock**. Incluye **autenticación JWT 
 - **Flyway** para esquema + datos semilla reproducibles.
 - **Swagger/OpenAPI** con esquema de seguridad Bearer para probar la API autenticada.
 - **Manejo global de errores** con respuesta JSON consistente y códigos correctos (400 / 401 / 403 / 404 / 409).
+- **App empaquetada en un solo artefacto:** el frontend se sirve desde el backend (mismo origen, sin CORS,
+  **una sola URL**), de modo que basta Java + Maven para ejecutarlo todo.
 - **Diseño de UI intencional** (no plantilla genérica): identidad de tostaduría, tipografía Space Grotesk +
   IBM Plex Mono, y un **espectro de tueste** funcional que codifica los perfiles Light / Medium / Dark.
-- **Docker Compose (virtualización):** un único `docker compose up` levanta BD + backend + frontend detrás de
-  **una sola URL** (nginx sirve la SPA y hace de proxy a la API). Sin instalar nada más.
 
 ---
 
@@ -53,31 +56,14 @@ estados y **anulación con devolución de stock**. Incluye **autenticación JWT 
 ## ✅ Requisitos
 
 - **Java 21** y **Maven 3.9+**
-- **Node 20+** y **npm** (probado con Node 24)
 - **PostgreSQL 16** accesible en `localhost`
+- (Solo si vas a recompilar el frontend) **Node 20+** y **npm**
 
 ---
 
 ## 🚀 Puesta en marcha
 
-### Opción A — Docker 🐳 (recomendado: un comando, una sola URL)
-
-Requiere Docker Desktop. Desde la raíz del proyecto:
-
-```bash
-docker compose up --build
-```
-
-Luego abre **http://localhost:8080** y listo. Un contenedor **nginx** sirve la SPA Angular y reenvía `/api`
-al backend; **PostgreSQL** se levanta y se siembra solo con Flyway. No hay que abrir varios puertos: **todo
-(app + API + Swagger en `/swagger-ui.html`) vive tras esa única URL**. Para detener: `docker compose down`
-(añade `-v` para borrar también el volumen de datos).
-
-### Opción B — Nativo (sin Docker)
-
-> En modo nativo el frontend (live‑reload) y la API corren por separado: app en `:4200`, API en `:8080`.
-
-#### 1. Base de datos
+### 1. Base de datos
 
 ```sql
 CREATE DATABASE cafe_trazabilidad;
@@ -85,30 +71,42 @@ CREATE USER cafe WITH PASSWORD 'cafe';
 GRANT ALL PRIVILEGES ON DATABASE cafe_trazabilidad TO cafe;
 ```
 
-> **Puerto:** por defecto el backend usa `5432`. Si tu PostgreSQL escucha en otro puerto, arráncalo con la
-> variable `DB_PORT` (p. ej. `DB_PORT=5433 mvn spring-boot:run`). Credenciales/puerto se pueden ajustar en
-> `backend/src/main/resources/application.yml` o por variables de entorno (`DB_USER`, `DB_PASSWORD`, `DB_PORT`).
+> **Puerto:** por defecto el backend usa `5432`. Si tu PostgreSQL escucha en otro puerto, pásalo con la variable
+> `DB_PORT`. También puedes ajustar `DB_USER` / `DB_PASSWORD` (o editar `backend/src/main/resources/application.yml`).
 
-#### 2. Backend
+### 2. Arrancar (todo en una sola URL)
 
 ```bash
 cd backend
-mvn spring-boot:run
+mvn -DskipTests package
+java -jar target/trazabilidad-1.0.0.jar
+# Si tu Postgres usa otro puerto:  DB_PORT=5433 java -jar target/trazabilidad-1.0.0.jar
 ```
 
-- API:  `http://localhost:8080`
-- Swagger UI:  `http://localhost:8080/swagger-ui.html`
-- **Flyway** crea el esquema y carga los datos demo automáticamente en el primer arranque.
+Abre **http://localhost:8080** y tienes:
 
-#### 3. Frontend
+- La **aplicación** (Angular) en la raíz.
+- La **API** bajo `/api/**`.
+- **Swagger UI** en `http://localhost:8080/swagger-ui.html`.
+
+**Flyway** crea el esquema y carga los datos demo en el primer arranque.
+
+> Se usa el **jar empaquetado** (autocontenido) porque es fiable en cualquier ruta. `mvn spring-boot:run` también
+> sirve si la ruta del proyecto **no contiene espacios** (en Windows, un espacio en la ruta rompe el classpath que
+> genera el plugin).
+
+### Desarrollo del frontend (opcional)
+
+Para iterar el frontend con recarga en vivo:
 
 ```bash
 cd frontend
 npm install
-npm start
+npm start          # http://localhost:4200, con proxy de /api → :8080
 ```
 
-- App:  `http://localhost:4200` (el dev‑server hace proxy de `/api` → `:8080`).
+Para regenerar el bundle que sirve el backend: `npm run build` y copiar `dist/frontend/browser/*` a
+`backend/src/main/resources/static/`.
 
 ---
 
@@ -135,19 +133,18 @@ npm start
 
 ```
 .
-├── backend/                      # API Spring Boot
-│   └── src/main/java/com/cafe/trazabilidad/
-│       ├── config/               # OpenAPI, CORS
-│       ├── common/               # errores globales, ApiError, PageResponse, BaseEntity
-│       ├── security/             # JWT, SecurityConfig, login, usuarios
-│       ├── finca/  loteverde/  lotetostado/   # features CRUD (controller/service/repo/dto/mapper)
-│       └── dashboard/            # endpoint de resumen
+├── backend/                      # API Spring Boot (también sirve el frontend compilado)
+│   └── src/main/
+│       ├── java/com/cafe/trazabilidad/
+│       │   ├── config/           # OpenAPI, CORS
+│       │   ├── common/           # errores globales, ApiError, PageResponse, BaseEntity
+│       │   ├── security/         # JWT, SecurityConfig, login, usuarios
+│       │   ├── finca/  loteverde/  lotetostado/   # features CRUD
+│       │   ├── dashboard/        # endpoint de resumen
+│       │   └── web/              # reenvío de rutas del SPA a index.html
+│       └── resources/static/     # frontend Angular compilado (servido por el backend)
 ├── frontend/                     # SPA Angular 20 + Tailwind (sistema "Roast Log")
-│   └── src/app/
-│       ├── core/                 # modelos, auth, interceptor JWT, guards, CRUD genérico
-│       ├── shared/               # badge, paginador, modal
-│       ├── layout/               # shell con navegación
-│       └── features/             # auth, dashboard, fincas, lotes-verdes, lotes-tostados
+│   └── src/app/                  # core, shared, layout, features
 ├── docs/
 │   ├── superpowers/specs/        # documento de diseño
 │   ├── superpowers/plans/        # plan de implementación por fases

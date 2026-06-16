@@ -40,7 +40,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
-                .anyRequest().authenticated())
+                // Recursos estáticos del SPA Angular y rutas de cliente: públicos.
+                .anyRequest().permitAll())
             .exceptionHandling(e -> e.authenticationEntryPoint(
                 (request, response, ex) ->
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No autenticado")))
