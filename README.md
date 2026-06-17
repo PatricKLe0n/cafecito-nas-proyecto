@@ -1,67 +1,33 @@
-# ☕ cafecito nas - proyecto — Trazabilidad de Café de Especialidad
+# cafecito nas - proyecto
 
-Mantenimiento (CRUD) full‑stack que modela la trazabilidad real del café **"de la finca a la taza"**:
+Aplicación web para llevar la trazabilidad de café de especialidad: desde la finca de origen
+hasta el lote ya tostado. En el fondo es un CRUD con tres entidades encadenadas
+(finca → lote de café verde → lote tostado) y algunas reglas propias del proceso, como el
+control de stock, el cálculo de la merma de tueste y la anulación de tandas.
 
-```
-Finca (origen)  →  Lote de café verde  →  Lote tostado
-```
+Está hecho con Angular en el frontend, Spring Boot (Java 21) en el backend y PostgreSQL como
+base de datos. El acceso se controla con JWT y dos roles.
 
-Cada eslabón se registra con sus reglas de negocio: control de **stock**, cálculo de **merma de tueste**,
-estados y **anulación con devolución de stock**. Incluye **autenticación JWT por roles** (ADMIN / USER).
+![Pantalla de login](docs/screenshots/01-login.png)
 
-> El frontend Angular viene **compilado y empaquetado dentro del backend**: al arrancar, **todo (app + API)
-> se sirve desde una única URL: `http://localhost:8080`**.
+## Stack
 
-![Login](docs/screenshots/01-login.png)
+- Frontend: Angular 20 (componentes standalone, signals) con Tailwind CSS.
+- Backend: Java 21 y Spring Boot 3.3, organizado por capas (controlador → servicio → repositorio).
+- Seguridad: Spring Security con JWT (BCrypt) y roles ADMIN / USER.
+- Persistencia: Spring Data JPA y Flyway para las migraciones.
+- Base de datos: PostgreSQL 16.
+- Apoyo: MapStruct para el mapeo a DTOs y JUnit 5 + Mockito para los tests.
 
----
+## Requisitos
 
-## 🧱 Stack
+- Java 21 y Maven 3.9 o superior.
+- PostgreSQL 16.
+- Node 20+ y npm, solo si vas a recompilar el frontend.
 
-| Capa | Tecnología |
-|---|---|
-| **Frontend** | Angular 20 (standalone + signals) · TypeScript · **Tailwind CSS** (sistema de diseño propio) |
-| **Backend** | Java 21 · Spring Boot 3.3 · arquitectura por capas (Controller → Service → Repository) |
-| **Seguridad** | Spring Security + **JWT** (HS256, BCrypt) · roles `ADMIN` / `USER` |
-| **Persistencia** | Spring Data JPA · **Flyway** (migraciones versionadas) |
-| **Base de datos** | PostgreSQL 16 |
-| **Mapeo / Tests** | MapStruct · JUnit 5 + Mockito |
+## Cómo ejecutarlo
 
----
-
-## ✨ Mejoras incorporadas (más allá del CRUD base)
-
-- **Spring Security + JWT** con autorización por rol: `ADMIN` escribe, `USER` solo lee (verificable en UI y API).
-- **Reglas de negocio reales** en el servidor: merma `= (entrada − salida) / entrada × 100`, control de stock del
-  lote verde, transición a `AGOTADO`, y anulación que **devuelve el peso** al stock.
-- **Flyway** para esquema + datos semilla reproducibles.
-- **Manejo global de errores** con respuesta JSON consistente y códigos correctos (400 / 401 / 403 / 404 / 409).
-- **App empaquetada en un solo artefacto:** el frontend se sirve desde el backend (mismo origen, sin CORS,
-  **una sola URL**), de modo que basta Java + Maven para ejecutarlo todo.
-- **Diseño de UI intencional** (no plantilla genérica): identidad de tostaduría, tipografía Space Grotesk +
-  IBM Plex Mono, y un **espectro de tueste** funcional que codifica los perfiles Light / Medium / Dark.
-
----
-
-## 📸 Vistas
-
-| Dashboard | Lotes tostados |
-|---|---|
-| ![Dashboard](docs/screenshots/02-dashboard.png) | ![Tostados](docs/screenshots/03-tostados.png) |
-
----
-
-## ✅ Requisitos
-
-- **Java 21** y **Maven 3.9+**
-- **PostgreSQL 16** accesible en `localhost`
-- (Solo si vas a recompilar el frontend) **Node 20+** y **npm**
-
----
-
-## 🚀 Puesta en marcha
-
-### 1. Base de datos
+1. Crear la base de datos:
 
 ```sql
 CREATE DATABASE cafe_trazabilidad;
@@ -69,101 +35,83 @@ CREATE USER cafe WITH PASSWORD 'cafe';
 GRANT ALL PRIVILEGES ON DATABASE cafe_trazabilidad TO cafe;
 ```
 
-> **Puerto:** por defecto el backend usa `5432`. Si tu PostgreSQL escucha en otro puerto, pásalo con la variable
-> `DB_PORT`. También puedes ajustar `DB_USER` / `DB_PASSWORD` (o editar `backend/src/main/resources/application.yml`).
-
-### 2. Arrancar (todo en una sola URL)
+2. Compilar y arrancar el backend:
 
 ```bash
 cd backend
 mvn -DskipTests package
 java -jar target/trazabilidad-1.0.0.jar
-# Si tu Postgres usa otro puerto:  DB_PORT=5433 java -jar target/trazabilidad-1.0.0.jar
 ```
 
-Abre **http://localhost:8080** y tienes:
+El frontend ya viene compilado dentro del backend, así que con eso es suficiente: abre
+http://localhost:8080 y ahí tienes la aplicación y la API.
 
-- La **aplicación** (Angular) en la raíz.
-- La **API** REST bajo `/api/**`.
+Si tu PostgreSQL escucha en otro puerto, pásalo con la variable `DB_PORT`, por ejemplo
+`DB_PORT=5433 java -jar target/trazabilidad-1.0.0.jar`. En el primer arranque, Flyway crea el
+esquema y carga algunos datos de ejemplo.
 
-**Flyway** crea el esquema y carga los datos demo en el primer arranque.
+Usuarios de prueba:
 
-> Se usa el **jar empaquetado** (autocontenido) porque es fiable en cualquier ruta. `mvn spring-boot:run` también
-> sirve si la ruta del proyecto **no contiene espacios** (en Windows, un espacio en la ruta rompe el classpath que
-> genera el plugin).
+- `admin` / `admin123` — puede crear, editar y borrar.
+- `user` / `user123` — solo lectura.
 
-### Desarrollo del frontend (opcional)
+### Frontend en desarrollo (opcional)
 
-Para iterar el frontend con recarga en vivo:
+Si quieres tocar el frontend con recarga en caliente:
 
 ```bash
 cd frontend
 npm install
-npm start          # http://localhost:4200, con proxy de /api → :8080
+npm start
 ```
 
-Para regenerar el bundle que sirve el backend: `npm run build` y copiar `dist/frontend/browser/*` a
-`backend/src/main/resources/static/`.
+Queda en http://localhost:4200 y redirige las llamadas de `/api` al backend. Para volver a
+empaquetarlo dentro del backend: `npm run build` y copiar el contenido de
+`dist/frontend/browser/` a `backend/src/main/resources/static/`.
 
----
+## Qué hace
 
-## 🔐 Credenciales demo
+- CRUD de fincas, lotes de café verde y lotes tostados.
+- Al registrar un tostado se descuenta el peso del lote de café verde; cuando llega a cero, el
+  lote pasa a "agotado".
+- La merma de cada tostado la calcula el servidor: `(peso de entrada − peso de salida) / peso de entrada`.
+- Anular un tostado devuelve el peso al lote verde.
+- No se puede borrar una finca o un lote que tenga registros que dependan de él.
+- Login con JWT; las operaciones de escritura quedan reservadas al rol ADMIN.
+- Un panel con indicadores y unos gráficos: distribución por perfil de tueste, merma por lote y
+  stock de café verde por finca.
 
-| Usuario | Contraseña | Rol | Permisos |
-|---|---|---|---|
-| `admin` | `admin123` | ADMIN | CRUD completo |
-| `user`  | `user123`  | USER  | Solo lectura |
-
----
-
-## 📐 Reglas de negocio
-
-- **Merma de tueste:** calculada en el backend, nunca aceptada del cliente.
-- **Control de stock:** al registrar un tueste se descuenta `pesoEntradaKg` del lote verde; si llega a 0 pasa a `AGOTADO`.
-- **Validaciones:** `pesoSalidaKg < pesoEntradaKg` y `pesoEntradaKg ≤ stock` (devuelven `409`).
-- **Anulación:** un tueste anulado **devuelve** el peso al lote verde y recalcula su estado.
-- **Integridad referencial:** no se elimina una finca/lote con dependencias (`409`).
-
----
-
-## 🗂️ Estructura
+## Estructura
 
 ```
-.
-├── backend/                      # API Spring Boot (también sirve el frontend compilado)
-│   └── src/main/
-│       ├── java/com/cafe/trazabilidad/
-│       │   ├── config/           # CORS
-│       │   ├── common/           # errores globales, ApiError, PageResponse, BaseEntity
-│       │   ├── security/         # JWT, SecurityConfig, login, usuarios
-│       │   ├── finca/  loteverde/  lotetostado/   # features CRUD
-│       │   ├── dashboard/        # endpoint de resumen
-│       │   └── web/              # reenvío de rutas del SPA a index.html
-│       └── resources/static/     # frontend Angular compilado (servido por el backend)
-├── frontend/                     # SPA Angular 20 + Tailwind (sistema de diseño propio)
-│   └── src/app/                  # core, shared, layout, features
-├── docs/
-│   └── screenshots/              # capturas de la UI
-└── README.md
+backend/    API Spring Boot (también sirve el frontend compilado)
+  src/main/java/com/cafe/trazabilidad/
+    config/      configuración (CORS)
+    common/      manejo de errores, paginación y clase base de entidades
+    security/    JWT, configuración de seguridad y login
+    finca/  loteverde/  lotetostado/   cada feature con su CRUD completo
+    dashboard/   endpoints de métricas
+    web/         reenvío de las rutas del SPA a index.html
+  src/main/resources/
+    db/migration/   migraciones Flyway (esquema y datos de ejemplo)
+    static/         frontend ya compilado
+frontend/   SPA Angular (core, shared, layout y features)
+docs/screenshots/   capturas de la aplicación
 ```
 
----
-
-## 🧪 Tests
+## Tests
 
 ```bash
 cd backend && mvn test
 ```
 
-Tests unitarios (JUnit 5 + Mockito) centrados en la lógica de negocio: firma/validación JWT, reglas de borrado de
-finca, y el núcleo del tostado (merma, validación entrada/salida, descuento de stock, anulación).
+Son tests unitarios sobre la lógica de negocio: la generación y validación del JWT, las reglas
+de borrado de finca y el núcleo del tostado (merma, validación de pesos, descuento y devolución
+de stock).
 
----
+## Notas
 
-## 🛡️ Nota de seguridad (producción)
-
-Este repositorio prioriza que un evaluador pueda **clonar y ejecutar sin configuración**: por eso incluye usuarios
-semilla, un secreto JWT por defecto y credenciales de BD locales. Para un despliegue real:
-
-- Inyectar `JWT_SECRET`, `DB_USER` y `DB_PASSWORD` por variables de entorno / gestor de secretos (sin valores por defecto).
-- Mover los usuarios semilla a una migración gateada por perfil (`dev`) y forzar el cambio de contraseña inicial.
+Para que sea fácil de probar, el proyecto incluye usuarios de ejemplo, un secreto de JWT por
+defecto y la conexión a la base local ya configurada. En un entorno real esos valores deberían
+ir en variables de entorno o en un gestor de secretos, y los usuarios de ejemplo habría que
+desactivarlos.
