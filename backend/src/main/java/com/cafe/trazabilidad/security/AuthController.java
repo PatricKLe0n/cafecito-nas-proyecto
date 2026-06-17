@@ -2,8 +2,6 @@ package com.cafe.trazabilidad.security;
 
 import com.cafe.trazabilidad.security.dto.LoginRequest;
 import com.cafe.trazabilidad.security.dto.LoginResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
  * {@link JwtService}. Es el único punto de entrada para obtener un token con el que
  * acceder al resto de recursos protegidos.</p>
  */
-@Tag(name = "Autenticación", description = "Inicio de sesión y emisión de tokens JWT")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -43,7 +40,6 @@ public class AuthController {
      * @return el token emitido junto con el nombre de usuario, el rol y el tiempo de expiración en milisegundos
      * @throws org.springframework.security.core.AuthenticationException si las credenciales no son válidas
      */
-    @Operation(summary = "Iniciar sesión", description = "Valida las credenciales y devuelve un token JWT junto con el rol del usuario.")
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest req) {
         authManager.authenticate(

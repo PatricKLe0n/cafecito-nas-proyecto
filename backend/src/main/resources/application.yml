@@ -26,10 +26,6 @@ app:
   cors:
     allowed-origin: ${FRONTEND_ORIGIN:http://localhost:4200}
 
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-
 logging:
   level:
     org.hibernate.SQL: debug

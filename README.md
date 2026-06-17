@@ -7,10 +7,10 @@ Finca (origen)  →  Lote de café verde  →  Lote tostado
 ```
 
 Cada eslabón se registra con sus reglas de negocio: control de **stock**, cálculo de **merma de tueste**,
-estados y **anulación con devolución de stock**. Incluye **autenticación JWT por roles** y **documentación OpenAPI**.
+estados y **anulación con devolución de stock**. Incluye **autenticación JWT por roles** (ADMIN / USER).
 
-> El frontend Angular viene **compilado y empaquetado dentro del backend**: al arrancar, **todo (app + API +
-> Swagger) se sirve desde una única URL: `http://localhost:8080`**.
+> El frontend Angular viene **compilado y empaquetado dentro del backend**: al arrancar, **todo (app + API)
+> se sirve desde una única URL: `http://localhost:8080`**.
 
 ![Login](docs/screenshots/01-login.png)
 
@@ -25,7 +25,6 @@ estados y **anulación con devolución de stock**. Incluye **autenticación JWT 
 | **Seguridad** | Spring Security + **JWT** (HS256, BCrypt) · roles `ADMIN` / `USER` |
 | **Persistencia** | Spring Data JPA · **Flyway** (migraciones versionadas) |
 | **Base de datos** | PostgreSQL 16 |
-| **Docs API** | springdoc‑openapi (Swagger UI) |
 | **Mapeo / Tests** | MapStruct · JUnit 5 + Mockito |
 
 ---
@@ -36,7 +35,6 @@ estados y **anulación con devolución de stock**. Incluye **autenticación JWT 
 - **Reglas de negocio reales** en el servidor: merma `= (entrada − salida) / entrada × 100`, control de stock del
   lote verde, transición a `AGOTADO`, y anulación que **devuelve el peso** al stock.
 - **Flyway** para esquema + datos semilla reproducibles.
-- **Swagger/OpenAPI** con esquema de seguridad Bearer para probar la API autenticada.
 - **Manejo global de errores** con respuesta JSON consistente y códigos correctos (400 / 401 / 403 / 404 / 409).
 - **App empaquetada en un solo artefacto:** el frontend se sirve desde el backend (mismo origen, sin CORS,
   **una sola URL**), de modo que basta Java + Maven para ejecutarlo todo.
@@ -86,8 +84,7 @@ java -jar target/trazabilidad-1.0.0.jar
 Abre **http://localhost:8080** y tienes:
 
 - La **aplicación** (Angular) en la raíz.
-- La **API** bajo `/api/**`.
-- **Swagger UI** en `http://localhost:8080/swagger-ui.html`.
+- La **API** REST bajo `/api/**`.
 
 **Flyway** crea el esquema y carga los datos demo en el primer arranque.
 
@@ -136,7 +133,7 @@ Para regenerar el bundle que sirve el backend: `npm run build` y copiar `dist/fr
 ├── backend/                      # API Spring Boot (también sirve el frontend compilado)
 │   └── src/main/
 │       ├── java/com/cafe/trazabilidad/
-│       │   ├── config/           # OpenAPI, CORS
+│       │   ├── config/           # CORS
 │       │   ├── common/           # errores globales, ApiError, PageResponse, BaseEntity
 │       │   ├── security/         # JWT, SecurityConfig, login, usuarios
 │       │   ├── finca/  loteverde/  lotetostado/   # features CRUD

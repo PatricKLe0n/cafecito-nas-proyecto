@@ -24,7 +24,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
  * del filtro de usuario y contraseña. Como consecuencia, cada petición debe portar su
  * propio token JWT; el servidor no conserva estado de autenticación entre llamadas.</p>
  *
- * <p>Las reglas de autorización abren los endpoints de login y la documentación OpenAPI,
+ * <p>Las reglas de autorización abren los endpoints de login,
  * conceden lectura ({@code GET}) a los roles {@code USER} y {@code ADMIN} y reservan las
  * operaciones de escritura ({@code POST}, {@code PUT}, {@code DELETE}) al rol {@code ADMIN}.
  * También expone los beans de codificación de contraseñas (BCrypt) y el
@@ -50,7 +50,6 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/error").permitAll()
-                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
